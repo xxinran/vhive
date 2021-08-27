@@ -319,27 +319,17 @@ func (o *Orchestrator) getImage(ctx context.Context, imageName string) (*contain
 		log.Debug(fmt.Sprintf("Pulling image %s", imageName))
 
 		imageURL := getImageURL(imageName)
-		local, _ := isLocalDomain(imageURL)
-		if local {
-			// Pull local image using HTTP
-			resolver := docker.NewResolver(docker.ResolverOptions{
-				Client: http.DefaultClient,
-				Hosts: docker.ConfigureDefaultRegistries(
-					docker.WithPlainHTTP(docker.MatchAllHosts),
-				),
-			})
-			image, err = o.client.Pull(ctx, imageURL,
-				containerd.WithPullUnpack,
-				containerd.WithPullSnapshotter(o.snapshotter),
-				containerd.WithResolver(resolver),
-			)
-		} else {
-			// Pull remote image
-			image, err = o.client.Pull(ctx, imageURL,
-				containerd.WithPullUnpack,
-				containerd.WithPullSnapshotter(o.snapshotter),
-			)
-		}
+		resolver := docker.NewResolver(docker.ResolverOptions{
+			Client: http.DefaultClient,
+			Hosts: docker.ConfigureDefaultRegistries(
+				docker.WithPlainHTTP(docker.MatchAllHosts),
+			),
+		})
+		image, err = o.client.Pull(ctx, imageURL,
+			containerd.WithPullUnpack,
+			containerd.WithPullSnapshotter(o.snapshotter),
+			containerd.WithResolver(resolver),
+		)
 
 		if err != nil {
 			return &image, err
