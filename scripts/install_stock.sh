@@ -22,19 +22,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+ARCH=`arch`
 sudo apt-get update >> /dev/null
+sudo apt install -y unzip
 
 sudo apt-get -y install btrfs-tools pkg-config libseccomp-dev unzip tar libseccomp2 socat util-linux apt-transport-https curl ipvsadm >> /dev/null
 
-wget --continue --quiet https://github.com/google/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
-sudo unzip -o -q protoc-3.11.4-linux-x86_64.zip -d /usr/local
-
-wget --continue --quiet https://github.com/containerd/containerd/releases/download/v1.4.1/containerd-1.4.1-linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf containerd-1.4.1-linux-amd64.tar.gz
-
-wget --continue --quiet https://github.com/opencontainers/runc/releases/download/v1.0.0-rc92/runc.amd64
-mv runc.amd64 runc
-sudo install -D -m0755 runc /usr/local/sbin/runc
+if [[ $ARCH == "x86_64" ]]; then
+	wget --continue --quiet https://github.com/google/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip -O protoc-3.11.4-linux.zip
+	wget --continue --quiet https://github.com/containerd/containerd/releases/download/v1.4.1/containerd-1.4.1-linux-amd64.tar.gz -O containerd-1.4.1-linux.tar.gz
+        wget --continue --quiet https://github.com/opencontainers/runc/releases/download/v1.0.0-rc92/runc.amd64 -O runc
+	sudo tar -C /usr/local -xzf containerd-1.4.1-linux.tar.gz
+	mv runc.amd64 runc
+	sudo install -D -m0755 runc /usr/local/sbin/runc
+elif [[ $ARCH == "aarch64" ]]; then
+	wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-aarch_64.zip -O protoc-3.11.4-linux.zip
+	sudo apt install containerd
+fi
+sudo unzip -o -q protoc-3.11.4-linux.zip -d /usr/local
 
 containerd --version || echo "failed to build containerd"
 

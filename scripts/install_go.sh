@@ -23,11 +23,16 @@
 # SOFTWARE.
 
 set -e
+ARCH=`arch`
+if [[ $ARCH == "x86_64" ]]; then
+	wget --continue --quiet  https://golang.org/dl/go1.16.4.linux-amd64.tar.gz  -O go1.16.4.tar.gz
+elif [[ $ARCH == "aarch64" ]]; then
+	wget --continue --quiet https://golang.org/dl/go1.16.4.linux-arm64.tar.gz -O go1.16.4.tar.gz
+fi
 
-wget --continue --quiet https://golang.org/dl/go1.16.4.linux-amd64.tar.gz
-
-sudo tar -C /usr/local -xzf go1.16.4.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.16.4.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 
 sudo sh -c  "echo 'export PATH=\$PATH:/usr/local/go/bin' >> /etc/profile"
+source /etc/profile
