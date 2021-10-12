@@ -44,15 +44,6 @@ kubectl apply -f $ROOT/configs/metallb/metallb-configmap.yaml
 # istio
 ARCH=`arch`
 KNATIVE_VERSION=v0.23.0
-if [[ $ARCH == "x86_64" ]]; then
-	cd $ROOT
-	curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.1 TARGET_ARCH=$ARCH sh -
-	export PATH=$PATH:$ROOT/istio-1.7.1/bin
-	sudo sh -c  "echo 'export PATH=\$PATH:$ROOT/istio-1.7.1/bin' >> /etc/profile"
-	istioctl install -f $ROOT/configs/istio/istio-minimal-operator.yaml
-elif [[ $ARCH == "aarch64" ]]; then
-	kubectl apply -f https://github.com/knative/net-kourier/releases/download/$KNATIVE_VERSION/kourier.yaml
-fi
 
 # Install KNative in the cluster
 if [ "$STOCK_CONTAINERD" == "stock-only" ]; then
@@ -61,6 +52,16 @@ if [ "$STOCK_CONTAINERD" == "stock-only" ]; then
 else
     kubectl apply --filename $ROOT/configs/knative_yamls/serving-crds.yaml
     kubectl apply --filename $ROOT/configs/knative_yamls/serving-core.yaml
+fi
+
+if [[ $ARCH == "x86_64" ]]; then
+	cd $ROOT
+	curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.1 TARGET_ARCH=$ARCH sh -
+	export PATH=$PATH:$ROOT/istio-1.7.1/bin
+	sudo sh -c  "echo 'export PATH=\$PATH:$ROOT/istio-1.7.1/bin' >> /etc/profile"
+	istioctl install -f $ROOT/configs/istio/istio-minimal-operator.yaml
+elif [[ $ARCH == "aarch64" ]]; then
+	kubectl apply -f https://github.com/knative/net-kourier/releases/download/$KNATIVE_VERSION/kourier.yaml
 fi
 
 # Install local cluster registry
