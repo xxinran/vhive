@@ -62,6 +62,7 @@ if [[ $ARCH == "x86_64" ]]; then
 	istioctl install -f $ROOT/configs/istio/istio-minimal-operator.yaml
 elif [[ $ARCH == "aarch64" ]]; then
 	kubectl apply -f https://github.com/knative/net-kourier/releases/download/$KNATIVE_VERSION/kourier.yaml
+	kubectl patch configmap/config-network   --namespace knative-serving   --type merge   --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
 fi
 
 # Install local cluster registry
