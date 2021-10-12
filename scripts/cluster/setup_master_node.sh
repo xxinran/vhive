@@ -51,7 +51,7 @@ if [[ $ARCH == "x86_64" ]]; then
 	sudo sh -c  "echo 'export PATH=\$PATH:$ROOT/istio-1.7.1/bin' >> /etc/profile"
 	istioctl install -f $ROOT/configs/istio/istio-minimal-operator.yaml
 elif [[ $ARCH == "aarch64" ]]; then
-	kubectl apply -f https://github.com/knative/net-kourier/releases/download//$KNATIVE_VERSION/kourier.yaml
+	kubectl apply -f https://github.com/knative/net-kourier/releases/download/$KNATIVE_VERSION/kourier.yaml
 fi
 
 # Install KNative in the cluster
