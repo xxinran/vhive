@@ -27,6 +27,8 @@ ROOT="$( cd $DIR && cd .. && cd .. && pwd)"
 
 STOCK_CONTAINERD=$1
 REPO_VOL_SIZE=5Gi
+#Untaint master node to install knative etc.
+kubectl taint nodes $HOSTNAME node-role.kubernetes.io/master-
 
 # Install Calico network add-on
 kubectl apply -f $ROOT/configs/calico/canal.yaml
